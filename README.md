@@ -5,7 +5,7 @@ Instructions on how to run the docker image:
 after the images are decompresed and added to your docker instance here is the commands to run them
 
 -(Remove Blar pixels) $ docker run -d pixelremover test_3
-# test_3 can be subtituted by any of the following test_1, test_2, test_3, test_4
+test_3 can be subtituted by any of the following test_1, test_2, test_3, test_4
 
 -(clark and write savings algorithm) $ docker run -d clarkwrite
 
