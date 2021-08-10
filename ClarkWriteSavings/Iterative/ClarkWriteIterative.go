@@ -8,33 +8,45 @@ import (
 func main() {
 	ClarkeWrite()
 }
+
+type entry struct {
+	val float32
+	key int
+}
+type entries []entry
+
+func (s entries) Len() int           { return len(s) }
+func (s entries) Less(i, j int) bool { return s[i].val < s[j].val }
+func (s entries) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func ClarkeWrite() {
 	savingsMatrix := SavingsMatrix(test0())
 	limWeight := 30
 	var RouteList [][]int
 	remainingNodes := map[int]int{1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0}
 	demand := []int{0, 12, 12, 6, 16, 15, 10, 8}
+	//for i := 1; i < len(savingsMatrix); i++ {
 	for i := 1; i < len(savingsMatrix); i++ {
 		if len(remainingNodes) != 0 {
 			_, Contains := remainingNodes[i]
+			delete(remainingNodes, i)
 			if Contains {
 				CurrentRoute := []int{i}
-				keys := make([]int, 0)
-				for k, _ := range savingsMatrix[i] {
-					keys = append(keys, k)
+				var sortedPoints entries
+				for k, v := range savingsMatrix[i] {
+					sortedPoints = append(sortedPoints, entry{val: v, key: k})
 				}
+				sort.Sort(sort.Reverse(sortedPoints))
 
-				sort.Slice(keys, func(i, j int) bool {
-					return keys[i] > keys[j]
-				})
 				runningAvailableWeight := demand[i]
-				for _, KeyElement := range keys {
-					if (runningAvailableWeight + demand[KeyElement]) <= limWeight {
-						_, ContainsKey := remainingNodes[KeyElement]
+				for _, KeyElement := range sortedPoints {
+					//fmt.Println(KeyElement.val)
+					loadCapacityContraint := (runningAvailableWeight + demand[KeyElement.key]) <= limWeight
+					if loadCapacityContraint {
+						_, ContainsKey := remainingNodes[KeyElement.key]
 						if ContainsKey {
-							CurrentRoute = append(CurrentRoute, KeyElement)
-							delete(remainingNodes, KeyElement)
-							runningAvailableWeight = runningAvailableWeight + demand[KeyElement]
+							CurrentRoute = append(CurrentRoute, KeyElement.key)
+							delete(remainingNodes, KeyElement.key)
+							runningAvailableWeight = runningAvailableWeight + demand[KeyElement.key]
 						}
 					}
 				}
